@@ -10,24 +10,48 @@ html, body {
 }
 
 #menu {
+
     user-select: none;
     padding: 20px;
-    margin: 5px;
+    margin: 20px 0px;
     background: #eee;
 }
 
 #frame {
 
     margin: auto;
+    padding: 50px 0px;
 
     position: relative;
     top: 50%;
     transform: translateY(-50%);
 
+    background: #ddd;
+
 }
 
 input {
     width: 50px;
+}
+
+#btn {
+
+    width: 100px;
+
+    padding: 5px;
+    margin: 5px;
+
+    background: #ddd;
+
+    display: inline-block;
+
+}
+
+#btn:hover {
+
+    background: #ccc;
+    cursor: pointer;
+
 }
 
 #canvas {

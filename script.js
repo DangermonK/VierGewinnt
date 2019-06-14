@@ -14,7 +14,7 @@ let now = Date.now();
 let last;
 let deltaTime;
 
-let fillList;
+let fillList = [];
 
 let p = [];
 let currentPlayer;
@@ -23,11 +23,21 @@ let texture;
 
 function Reload() {
 
-    let nR = document.getElementById("row");
-    let nC = document.getElementById("cell");
-    let nS = document.getElementById("size");
+    let nR = document.getElementById("rowN").value;
+    let nC = document.getElementById("cellN").value;
+    let nS = document.getElementById("sizeN").value;
 
 
+    clearInterval(game);
+
+    p = [];
+    fillList = [];
+
+    cellSize = nS;
+    gridWidth = nC;
+    gridHeight = nR;
+
+    start();
 
 }
 
@@ -36,7 +46,7 @@ function start() {
     canvas = document.getElementById("canvas");
     ctx = canvas.getContext("2d");
 
-    canvas.addEventListener("mousedown", getPosition, false);
+    canvas.addEventListener("mousedown", getPosition);
 
     canvas.width = gridWidth * cellSize;
     canvas.height = gridHeight * cellSize;
@@ -44,11 +54,9 @@ function start() {
     width = canvas.offsetWidth;
     height = canvas.offsetHeight;
 
-    fillList = new Array(gridWidth);
+    for(let i = 0; i < gridWidth; i++) {
 
-    for(let i = 0; i < fillList.length; i++) {
-
-        fillList[i] = 0;
+        fillList.push(0);
 
     }
 
@@ -128,6 +136,7 @@ class Player {
     SetBall(cell) {
 
         if(fillList[cell] < gridHeight) {
+            console.log("hello");
             this.ballList.push(new Ball(cell));
             return true;
         }
