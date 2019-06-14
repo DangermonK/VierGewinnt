@@ -28,16 +28,20 @@ function Reload() {
     let nS = document.getElementById("sizeN").value;
 
 
-    clearInterval(game);
+    if(nR >= 4 && nC >= 4 && nS >= 16 && nR <= 12 && nC <= 12 && nS <= 32) {
 
-    p = [];
-    fillList = [];
+        clearInterval(game);
 
-    cellSize = nS;
-    gridWidth = nC;
-    gridHeight = nR;
+        p = [];
+        fillList = [];
 
-    start();
+        cellSize = nS;
+        gridWidth = nC;
+        gridHeight = nR;
+
+        start();
+
+    }
 
 }
 
