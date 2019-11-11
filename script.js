@@ -2,7 +2,9 @@ let canvas;
 let ctx;
 
 let game;
-let timeout = 10
+let timeout = 10;
+let running = false;
+let ending = false;
 
 let width;
 let height;
@@ -21,28 +23,24 @@ let currentPlayer;
 
 let texture;
 
-function Reload() {
+let dirMatr = [
+    [1,0],
+    [1,1],
+    [0,1],
+    [1,-1]
+];
 
-    let nR = document.getElementById("rowN").value;
-    let nC = document.getElementById("cellN").value;
-    let nS = document.getElementById("sizeN").value;
+function EndGameCallback() {
 
+    if(ending === false) {
+        ending = true;
 
-    if(nR >= 4 && nC >= 4 && nS >= 16 && nR <= 12 && nC <= 12 && nS <= 32) {
+        console.log("spieler "+ currentPlayer +" hat gewonnen");
 
-        clearInterval(game);
+        // hier code für ending events
 
-        p = [];
-        fillList = [];
-
-        cellSize = nS;
-        gridWidth = nC;
-        gridHeight = nR;
-
-        start();
-
+        setTimeout(ResetGame, 1000); // zeit nach der das spiel resetet wird
     }
-
 }
 
 function start() {
@@ -58,12 +56,6 @@ function start() {
     width = canvas.offsetWidth;
     height = canvas.offsetHeight;
 
-    for(let i = 0; i < gridWidth; i++) {
-
-        fillList.push(0);
-
-    }
-
     texture = new Image();
     texture.src = "robin.png";
 
@@ -73,6 +65,7 @@ function start() {
 
 function getPosition(event)
 {
+
     let x = event.x;
 
     x -= canvas.offsetLeft;
@@ -87,12 +80,31 @@ function getPosition(event)
 
 }
 
+function ResetGame() {
+
+    fillList = [];
+    p = [];
+
+    clearInterval(game);
+    RunGame();
+
+}
+
 function RunGame() {
+
+    for(let i = 0; i < gridWidth; i++) {
+
+        fillList.push(0);
+
+    }
 
     p.push(new Player(0));
     p.push(new Player(1));
 
     currentPlayer = 0;
+
+    running = true;
+    ending = false;
 
     game = setInterval(Draw, timeout);
 
@@ -139,12 +151,59 @@ class Player {
 
     SetBall(cell) {
 
-        if(fillList[cell] < gridHeight) {
-            console.log("hello");
+        if(fillList[cell] < gridHeight && running) {
             this.ballList.push(new Ball(cell));
+            this.CheckBalls();
             return true;
         }
         return false;
+
+    }
+
+    FindBall(x, y) {
+
+        let ball = null;
+
+        this.ballList.forEach(b => {
+
+            if(b.cell === x && b.row === y) {
+
+                ball = b;
+            }
+
+        });
+
+        return ball;
+
+    }
+
+    CheckBallDir(ball, dir, count) {
+
+        let b = this.FindBall(ball.cell + dirMatr[dir][0], ball.row + dirMatr[dir][1]);
+
+        if(b !== null) {
+            count++;
+            if(count >= 4)
+                return count;
+            return this.CheckBallDir(b, dir, count);
+        } else {
+            return count;
+        }
+
+    }
+
+    CheckBalls() {
+
+        this.ballList.forEach(b => {
+
+            for(let dir = 0; dir < dirMatr.length; dir++) {
+                let n = this.CheckBallDir(b, dir, 1);
+                if(n >= 4) {
+                    running = false;
+                }
+            }
+
+        });
 
     }
 
@@ -202,6 +261,9 @@ class Ball {
                 if (Math.sqrt(this.yVel * this.yVel) < 40) {
                     this.yVel = 0;
                     this.run = false;
+                    if(!running && !ending) {
+                        EndGameCallback();
+                    }
                 }
 
             }
